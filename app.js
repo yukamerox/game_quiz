@@ -50,47 +50,47 @@ const quiz = [
 const quizLength = quiz.length;
 let quizIndex = 0;
 let score = 0;
-//データセット完了
-//↑while文回転させる
 
-const $button = document.getElementsByTagName('button');
-const buttonLength = $button.length;
+const buttons = Array.from(document.getElementsByTagName('button'));
+const buttonLength = buttons.length;
+
+const addScore = score => score = score + 1;
+
+const renderAnswerBtns = (answers, buttons) => {
+  answers.forEach((answer, index) => buttons[index].textContent = answer);
+}
 
 //クイズの問題文、選択肢を定義
-const setupQuiz = () => {
-  document.getElementById('js-question').textContent = quiz[quizIndex].question;
-  let buttonIndex = 0;
-  while(buttonIndex < buttonLength){
-    $button [buttonIndex].textContent = quiz[quizIndex].answers[buttonIndex];
-    buttonIndex++;
-} 
+const setupQuiz = ({ question, answers }) => {
+  document.getElementById('js-question').textContent = question;
+  renderAnswerBtns(answers, buttons);
+};
+
+const clickHandler = e => {
+  if (quiz[quizIndex].correct === e.target.textContent) {
+    window.alert('正解！');
+    score = addScore(score);
+  } else {
+    window.alert('不正解！');
+  }
+
+  quizIndex++;
+
+  if(quizIndex < quizLength) {
+  //問題数がまだあればこちらを実行
+    setupQuiz(quiz[quizIndex]);
+  } else {
+    window.alert(`終了！あなたの正解数は${score}/${quizLength}です！`);
+  }
 }
+
+const addEventToButtons = (buttons => {
+  buttons.forEach(
+    button => button.addEventListener('click',
+      e => clickHandler(e)
+    )
+  ); 
+})(buttons);
 
 //問題文や選択肢の書き換えを行っていいる命令
-setupQuiz();
-const clickHandler = (e) => {
-  if(quiz[quizIndex].correct === e.target.textContent ){
-    window.alert('正解！');
-    score++;
-    } else {
-    window.alert('不正解！');
-    }
-    quizIndex++;
-    if(quizIndex < quizLength) {
-      //問題数がまだあればこちらを実行
-      setupQuiz();
-    } else {
-      //問題数がなければこちらを実行
-    window.alert('終了！あなたの正解数は' + score + '/' + quizLength + 'です！');
-  
-  }
-  }
-
-let handlerIndex =  0;
-
-while(handlerIndex < buttonLength) {
-  $button [handlerIndex].addEventListener('click',(e) => {
-    clickHandler(e);
-});
-handlerIndex++;
-}
+setupQuiz(quiz[quizIndex]);
